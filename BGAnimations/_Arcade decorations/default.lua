@@ -19,7 +19,7 @@ t[#t+1] = Def.ActorFrame {
 		CoinModeChangedMessageCommand=cmd(playcommand,"Refresh");
 		RefreshCommand=function(self)
 			local bReady = GAMESTATE:GetNumSidesJoined() > 0;
-			if or bReady then
+			if bReady then
 				self:settext(THEME:GetString("ScreenTitleJoin","HelpTextJoin"));
 			else
 				self:settext(THEME:GetString("ScreenTitleJoin","HelpTextWait"));

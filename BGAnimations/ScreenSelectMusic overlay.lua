@@ -1,5 +1,8 @@
 local t = Def.ActorFrame {};
 
+t[#t+1] = LoadActor("_cursor")
+t[#t+1] = LoadActor("_mousewheelscroll")
+t[#t+1] = LoadActor("_mouseselect")
 -- Sort order
 t[#t+1] = Def.ActorFrame {
     InitCommand=cmd(x,SCREEN_RIGHT-290;y,SCREEN_TOP+49;;);
@@ -40,6 +43,24 @@ t[#t+1] = Def.ActorFrame {
                end
           end;
     };
+    LoadFont("Common Condensed") .. {
+          InitCommand=cmd(zoom,1;maxwidth,SCREEN_WIDTH;addx,-750;addy,SCREEN_HEIGHT-70;diffuse,color("#FFFFFF"););
+          OnCommand=cmd(queuecommand,"Set");
+          SortOrderChangedMessageCommand=cmd(queuecommand,"Set");
+          ChangedLanguageDisplayMessageCommand=cmd(queuecommand,"Set");
+          SetCommand=function(self)
+				profile = GetPlayerOrMachineProfile(PLAYER_1)
+				playerRating = profile:GetPlayerRating()
+				self:settextf("Rating: %5.2f",playerRating)
+          end;
+    };
+    LoadFont("Common Condensed") .. {
+		InitCommand=cmd(addx,-500;addy,SCREEN_HEIGHT-70;halign,0.5;zoom,1;shadowlength,1;),
+          OnCommand=cmd(queuecommand,"Set");
+          SetCommand=function(self)
+				self:settext("Ctrl+S to search")
+          end;
+	},
 };
 
 return t

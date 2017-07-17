@@ -168,7 +168,7 @@ for ip, p in ipairs(GAMESTATE:GetHumanPlayers()) do
 			OffCommand=cmd(decelerate,0.3;diffusealpha,0)
 		},
 		Def.Quad {
-			InitCommand=cmd(y,110;zoomto,190,100;diffuse,color("#fce1a1");),
+			InitCommand=cmd(y,110;zoomto,190,150;diffuse,color("#fce1a1");),
 			OnCommand=function(self)
 			    self:diffusealpha(0):decelerate(0.4):diffusealpha(0.3)
 			end,
@@ -199,6 +199,16 @@ for ip, p in ipairs(GAMESTATE:GetHumanPlayers()) do
 			end;
 			OffCommand=cmd(decelerate,0.3;diffusealpha,0);
 		}
+	}
+	-- Primary score.
+	eval_parts[#eval_parts+1] = Def.BitmapText {
+		Font = "_overpass 36px",
+		InitCommand=cmd(horizalign,center;x,_screen.cx + (grade_parts_offs);y,(_screen.cy-5);diffuse,ColorMidTone(PlayerColor(p));zoom,1;shadowlength,1),
+		OnCommand=function(self)
+				local score = SCOREMAN:GetMostRecentScore()
+				local meter = score:GetSkillsetSSR("Overall")
+				self:settextf("%5.2f", meter)
+		end;
 	}
 end
 
@@ -297,6 +307,8 @@ if gameplay_pause_count > 0 then
 		OffCommand=cmd(decelerate,0.3;diffusealpha,0);
 	}
 end
+
+t[#t+1] = LoadActor("offsetplot")
 
 return t;
 

@@ -11,6 +11,7 @@ local t = LoadFallbackB();
 
 -- Banner 
 
+	t[#t+1] = LoadActor("songsearch")
 	t[#t+1] = LoadActor("_bannerframe") .. {
 		 InitCommand=cmd(zoom,1;x,SCREEN_CENTER_X-228;y,SCREEN_CENTER_Y-165-11;draworder,47);
 		 OnCommand=cmd(zoomy,0;decelerate,0.3;zoomy,1;);
@@ -115,7 +116,7 @@ t[#t+1] = Def.ActorFrame {
 				  end
 		};
 		LoadFont("StepsDisplay meter") .. { 
-			  InitCommand=cmd(zoom,1.25;diffuse,color("#000000");addx,-143;addy,13);
+			  InitCommand=cmd(zoom,1;diffuse,color("#000000");addx,-143;addy,13);
 			  OnCommand=cmd(diffusealpha,0;smooth,0.2;diffusealpha,0.75;);
 			  OffCommand=cmd(linear,0.3;diffusealpha,0;);
 			  CurrentStepsP1ChangedMessageCommand=cmd(queuecommand,"Set";); 
@@ -126,11 +127,7 @@ t[#t+1] = Def.ActorFrame {
 				local song = GAMESTATE:GetCurrentSong();
 				if song then 
 					if stepsP1 ~= nil then
-						local st = stepsP1:GetStepsType();
-						local diff = stepsP1:GetDifficulty();
-						local courseType = GAMESTATE:IsCourseMode() and SongOrCourse:GetCourseType() or nil;
-						local cd = GetCustomDifficulty(st, diff, courseType);
-						self:settext(stepsP1:GetMeter())
+						self:settextf("%05.2f",stepsP1:GetMSD(getCurRateValue(), 1))
 					else
 						self:settext("")
 					end
@@ -225,7 +222,7 @@ t[#t+1] = Def.ActorFrame {
 				  end
 		};
 		LoadFont("StepsDisplay meter") .. { 
-			  InitCommand=cmd(zoom,1.25;diffuse,color("#000000");addx,143;addy,13);
+			  InitCommand=cmd(zoom,1;diffuse,color("#000000");addx,143;addy,13);
 			  OnCommand=cmd(diffusealpha,0;smooth,0.2;diffusealpha,0.75;);
 			  OffCommand=cmd(linear,0.3;diffusealpha,0;);
 			  CurrentStepsP2ChangedMessageCommand=cmd(queuecommand,"Set";); 
@@ -236,11 +233,7 @@ t[#t+1] = Def.ActorFrame {
 				local song = GAMESTATE:GetCurrentSong();
 				if song then 
 					if stepsP2 ~= nil then
-						local st = stepsP2:GetStepsType();
-						local diff = stepsP2:GetDifficulty();
-						local courseType = GAMESTATE:IsCourseMode() and SongOrCourse:GetCourseType() or nil;
-						local cd = GetCustomDifficulty(st, diff, courseType);
-						self:settext(stepsP2:GetMeter())
+						self:settextf("%05.2f",stepsP2:GetMSD(getCurRateValue(), 1))
 					else
 						self:settext("")
 					end
