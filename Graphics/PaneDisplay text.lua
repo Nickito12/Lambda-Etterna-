@@ -9,9 +9,6 @@ local function GetRadarData( pnPlayer, rcRadarCategory )
 	if GAMESTATE:GetCurrentSteps( pnPlayer ) then
 		StepsOrTrail = GAMESTATE:GetCurrentSteps( pnPlayer );
 		fDesiredValue = StepsOrTrail:GetRadarValues( pnPlayer ):GetValue( rcRadarCategory );
-	elseif GAMESTATE:GetCurrentTrail( pnPlayer ) then
-		StepsOrTrail = GAMESTATE:GetCurrentTrail( pnPlayer );
-		fDesiredValue = StepsOrTrail:GetRadarValues( pnPlayer ):GetValue( rcRadarCategory );
 	else
 		StepsOrTrail = nil;
 	end;
@@ -34,11 +31,9 @@ local function CreatePaneDisplayItem( _pnPlayer, _sLabel, _rcRadarCategory )
 			CurrentStepsP2ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP1ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP2ChangedMessageCommand=cmd(playcommand,"Set");
-			CurrentCourseChangedMessageCommand=cmd(playcommand,"Set");
 			SetCommand=function(self)
 				local song = GAMESTATE:GetCurrentSong()
-				local course = GAMESTATE:GetCurrentCourse()
-				if not song and not course then
+				if not song then
 					self:settextf("%04i", 0);
 				else
 					self:settextf("%04i", GetRadarData( _pnPlayer, _rcRadarCategory ) );
@@ -67,11 +62,9 @@ local function CreatePaneDisplayGraph( _pnPlayer, _sLabel, _rcRadarCategory )
 			CurrentStepsP2ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP1ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP2ChangedMessageCommand=cmd(playcommand,"Set");
-			CurrentCourseChangedMessageCommand=cmd(playcommand,"Set");
 			SetCommand=function(self)
 				local song = GAMESTATE:GetCurrentSong()
-				local course = GAMESTATE:GetCurrentCourse()
-				if not song and not course then
+				if not song then
 					self:stoptweening();
 					self:decelerate(0.2);
 					self:zoomtowidth(0);
@@ -90,11 +83,9 @@ local function CreatePaneDisplayGraph( _pnPlayer, _sLabel, _rcRadarCategory )
 			CurrentStepsP2ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP1ChangedMessageCommand=cmd(playcommand,"Set");
 			CurrentTrailP2ChangedMessageCommand=cmd(playcommand,"Set");
-			CurrentCourseChangedMessageCommand=cmd(playcommand,"Set");
 			SetCommand=function(self)
 				local song = GAMESTATE:GetCurrentSong()
-				local course = GAMESTATE:GetCurrentCourse()
-				if not song and not course then
+				if not song then
 					self:settext("")
 				else
 					self:settextf("%i%%", GetRadarData( _pnPlayer, _rcRadarCategory ) * 100 );

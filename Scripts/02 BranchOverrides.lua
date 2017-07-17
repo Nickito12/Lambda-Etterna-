@@ -28,3 +28,36 @@ Branch.OptionsEdit = function()
 	end
 	return "ScreenEditMenu"
 end
+
+Branch.AfterEvaluation = function()
+	return "ScreenProfileSave"
+	--[[]
+	if GAMESTATE:IsEventMode() or stagesLeft >= 1 then
+		return "ScreenProfileSave"
+	elseif song:IsLong() and maxStages <= 2 and stagesLeft < 1 and allFailed then
+		return "ScreenProfileSaveSummary"
+	elseif song:IsMarathon() and maxStages <= 3 and stagesLeft < 1 and allFailed then
+		return "ScreenProfileSaveSummary"
+	elseif maxStages >= 2 and stagesLeft < 1 and allFailed then
+		return "ScreenProfileSaveSummary"
+	elseif allFailed then
+		return "ScreenProfileSaveSummary"
+	else
+		return "ScreenProfileSave"
+	end
+	]]
+end
+
+
+Branch.AfterSelectProfile = function()
+	if ( THEME:GetMetric("Common","AutoSetStyle") == true ) then
+		-- use SelectStyle in online...
+		return IsNetConnected() and "ScreenSelectStyle" or "ScreenSelectMusic"
+	else
+		return "ScreenSelectStyle"
+	end
+end
+
+Branch.AfterProfileLoad = function()
+	return "ScreenSelectMusic"
+end

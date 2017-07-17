@@ -23,21 +23,18 @@ t[#t+1] = StandardDecorationFromFileOptional("SystemDirection","SystemDirection"
 
 t[#t+1] = StandardDecorationFromFileOptional("NumSongs","NumSongs") .. {
 	SetCommand=function(self)
-		local InstalledSongs, AdditionalSongs, InstalledCourses, AdditionalCourses, Groups, Unlocked = 0;
+		local InstalledSongs, AdditionalSongs, Groups = 0;
 		if SONGMAN:GetRandomSong() then
-			InstalledSongs, AdditionalSongs, InstalledCourses, AdditionalCourses, Groups, Unlocked =
+			InstalledSongs, AdditionalSongs, Groups =
 				SONGMAN:GetNumSongs(),
 				SONGMAN:GetNumAdditionalSongs(),
-				SONGMAN:GetNumCourses(),
-				SONGMAN:GetNumAdditionalCourses(),
-				SONGMAN:GetNumSongGroups(),
-				SONGMAN:GetNumUnlockedSongs();
+				SONGMAN:GetNumSongGroups();
 		else
 			return
 		end
 
-		self:settextf(THEME:GetString("ScreenTitleMenu","%i Songs (%i Groups), %i Courses"), InstalledSongs, Groups, InstalledCourses);
--- 		self:settextf("%i (+%i) Songs (%i Groups), %i (+%i) Courses", InstalledSongs, AdditionalSongs, Groups, InstalledCourses, AdditionalCourses);
+		self:settextf(THEME:GetString("ScreenTitleMenu","%i Songs (%i Groups)"), InstalledSongs, Groups);
+ 		--self:settextf("%i (+%i) Songs (%i Groups), %i (+%i) Courses", InstalledSongs, AdditionalSongs, Groups, InstalledCourses, AdditionalCourses);
 	end;
 };
 

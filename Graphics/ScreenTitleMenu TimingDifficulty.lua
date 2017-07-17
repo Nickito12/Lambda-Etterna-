@@ -1,6 +1,6 @@
 local icon_params = {
 	base_color = color("#CE3D06"),
-	label_text = Screen.String("TimingDifficulty"),
+	label_text = "TimingDifficulty",
 	value_text = GetTimingDifficulty() == 9 and Screen.String("Hardest Timing") or GetTimingDifficulty()
 }
 

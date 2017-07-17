@@ -5,12 +5,6 @@ local bottomSlide = 0.76;
 local easeTime = 0.10;
 
 local sStage = ""
-sStage = GAMESTATE:GetCurrentStage()
-
-if playMode ~= 'PlayMode_Regular' and playMode ~= 'PlayMode_Rave' and playMode ~= 'PlayMode_Battle' then
-  sStage = playMode;
-end;
-
 local t = Def.ActorFrame {};
 t[#t+1] = Def.Quad {
 	InitCommand=cmd(Center;zoomto,SCREEN_WIDTH,SCREEN_HEIGHT;diffuse,Color("Black"));
@@ -49,33 +43,6 @@ t[#t+1] = Def.ActorFrame {
 	};
 };
 
-
-local stage_num_actor= THEME:GetPathG("ScreenStageInformation", "Stage " .. ToEnumShortString(sStage), true)
-if stage_num_actor ~= "" and FILEMAN:DoesFileExist(stage_num_actor) then
-	stage_num_actor= LoadActor(stage_num_actor)
-else
-	-- Midiman:  We need a "Stage Next" actor or something for stages after
-	-- the 6th. -Kyz
-	local curStage = GAMESTATE:GetCurrentStage();
-	stage_num_actor= Def.BitmapText{
-		Font= "Common Normal",  Text= thified_curstage_index(false) .. " Stage",
-		InitCommand= function(self)
-			self:zoom(1.5)
-			self:strokecolor(Color.Black)
-			self:diffuse(StageToColor(curStage));
-			self:diffusetopedge(ColorLightTone(StageToColor(curStage)));
-		end
-	}
-end
-
-t[#t+1] = Def.ActorFrame {
-	InitCommand=cmd(x,SCREEN_CENTER_X;y,SCREEN_CENTER_Y+190);
-	OnCommand=cmd(addy,SCREEN_HEIGHT;sleep,slideWait;smooth,slideTime+easeTime;addy,-SCREEN_HEIGHT;sleep,2-easeTime;smooth,bottomSlide;addy,240;);
-
-	stage_num_actor .. {
-		OnCommand=cmd(zoom,1;diffusealpha,1);
-	};
-};
 
 -- Step author credits
 	if GAMESTATE:IsHumanPlayer(PLAYER_1) == true then

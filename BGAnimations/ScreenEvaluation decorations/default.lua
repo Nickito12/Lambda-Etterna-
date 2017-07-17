@@ -34,9 +34,9 @@ local function GetPlScore(pl, scoretype)
 	local primary_score = STATSMAN:GetCurStageStats():GetPlayerStageStats(pl):GetScore()
 	local secondary_score = FormatPercentScore(STATSMAN:GetCurStageStats():GetPlayerStageStats(pl):GetPercentDancePoints())
 	
-	if PREFSMAN:GetPreference("PercentageScoring") then
-		primary_score, secondary_score = secondary_score, primary_score
-	end
+	--if PREFSMAN:GetPreference("PercentageScoring") then
+	primary_score, secondary_score = secondary_score, primary_score
+	--end
 	
 	if scoretype == "primary" then
 		return primary_score
@@ -70,24 +70,6 @@ local mid_pane = Def.ActorFrame {
 	}
 }
 
-
--- Text that's slapped on top of the banner frame.
-if not GAMESTATE:IsCourseMode() then
-	mid_pane[#mid_pane+1] = LoadActor(THEME:GetPathG("ScreenEvaluation", "StageDisplay")) .. {
-		OnCommand=cmd(x,_screen.cx;y,_screen.cy-98;diffuse,color("#9d324e"))
-	}
-else
-	mid_pane[#mid_pane+1] = Def.BitmapText {
-		Font="_roboto condensed Bold italic 24px",
-		InitCommand=function(self)
-			local course = GAMESTATE:GetCurrentCourse()
-			self:settext(ToEnumShortString( course:GetCourseType() ))
-			self:x(_screen.cx):y(_screen.cy-118.5):diffuse(color("#9d324e")):uppercase(true)
-		end,
-		OnCommand=cmd(playcommand,"Set";zoomx,0.8;diffusealpha,0;decelerate,0.4;zoomx,1;diffusealpha,1),
-		OffCommand=cmd(decelerate,0.4;diffusealpha,0)
-	}
-end
 
 -- Each line's text, and associated decorations.
 for i, v in ipairs(eval_lines) do
