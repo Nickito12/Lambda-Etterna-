@@ -136,6 +136,40 @@ function GetProTiming(pn)
 	end
 end
 
+
+local RSChoices = {}
+for i=1,250  do
+	RSChoices[i] = tostring(i).."%"
+end
+function ReceptorSize()
+	local t = {
+		Name = "ReceptorSize",
+		LayoutType = "ShowAllInRow",
+		SelectType = "SelectOne",
+		OneChoiceForAllPlayers = false,
+		ExportOnChange = true,
+		Choices = RSChoices,
+		LoadSelections = function(self, list, pn)
+			local pName = ToEnumShortString(pn)
+			local prefs = getenv("ReceptorSize"..pName) or 100--playerConfig:get_data(pn_to_profile_slot(pn)).ReceptorSize
+			list[prefs] = true
+		end,
+		SaveSelections = function(self, list, pn)
+			local pName = ToEnumShortString(pn)
+			for i=1,#list do
+				if list[i] == true then
+					setenv("ReceptorSize"..pName, i)
+					--playerConfig:get_data(pn_to_profile_slot(pn)).ReceptorSize = value
+					break
+				end
+			end
+			--playerConfig:set_dirty(pn_to_profile_slot(pn))
+			--playerConfig:save(pn_to_profile_slot(pn))
+		end,
+	}
+	--setmetatable( t, t )
+	return t
+end
 --[[ option rows ]]
 
 -- screen filter
@@ -204,5 +238,6 @@ function OptionRowProTiming()
 		end
 	}
 end
+
 
 --[[ end option rows ]]
