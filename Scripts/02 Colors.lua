@@ -108,3 +108,29 @@ GameColor.Difficulty["Crazy"]       = GameColor.Difficulty["Hard"]
 GameColor.Difficulty["Freestyle"]   = GameColor.Difficulty["Easy"]
 GameColor.Difficulty["Nightmare"]   = GameColor.Difficulty["Challenge"]
 GameColor.Difficulty["HalfDouble"]  = GameColor.Difficulty["Medium"]
+
+
+
+function byDifficulty(diff)
+	return GameColor.Difficulty[diff]
+end
+
+function getDifficultyColor(diff)
+	return GameColor.Difficulty[diff] or color("#ffffff");
+end
+
+-- Colorized stuff
+function ByMSD(x)
+	if x then
+		return HSV(math.max(95 - (x/40)*150, -50), 0.9, 0.9)
+	end
+	return HSV(0, 0.9, 0.9)
+end
+
+function ByMusicLength(x)
+	if x then
+		x = math.min(x,600)
+		return HSV(math.max(95 - (x/900)*150, -50), 0.9, 0.9)
+	end
+	return HSV(0, 0.9, 0.9)
+end

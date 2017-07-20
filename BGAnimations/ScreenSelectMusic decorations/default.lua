@@ -331,5 +331,44 @@ t[#t+1] = Def.ActorFrame{
 
 t[#t+1] = StandardDecorationFromFileOptional("AlternateHelpDisplay","AlternateHelpDisplay");
 
-
+-- Change rates with effect up/down
+function roundme(x, y)
+	y = 10^(y or 0)
+	return math.floor(x*y+0.5)/y
+end
+function getCurRateValue()
+  return roundme(GAMESTATE:GetSongOptionsObject('ModsLevel_Current'):MusicRate(),3)
+end
+function ChangeMusicRate(rate,params)
+	if params.Name == "PrevScore" and rate < 2.95 then
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Preferred'):MusicRate(rate+0.1)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Song'):MusicRate(rate+0.1)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Current'):MusicRate(rate+0.1)
+		MESSAGEMAN:Broadcast("CurrentRateChanged")
+	elseif params.Name == "NextScore" and rate > 0.75 then
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Preferred'):MusicRate(rate-0.1)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Song'):MusicRate(rate-0.1)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Current'):MusicRate(rate-0.1)
+		MESSAGEMAN:Broadcast("CurrentRateChanged")
+	end
+	
+	if params.Name == "PrevRate" and rate < 3 then
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Preferred'):MusicRate(rate+0.05)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Song'):MusicRate(rate+0.05)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Current'):MusicRate(rate+0.05)
+		MESSAGEMAN:Broadcast("CurrentRateChanged")
+	elseif params.Name == "NextRate" and rate > 0.7 then
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Preferred'):MusicRate(rate-0.05)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Song'):MusicRate(rate-0.05)
+		GAMESTATE:GetSongOptionsObject('ModsLevel_Current'):MusicRate(rate-0.05)
+		MESSAGEMAN:Broadcast("CurrentRateChanged")
+	end
+end
+t[#t+1] = LoadFont("Common Large") .. {
+	InitCommand=cmd(visible,false;),
+	CodeMessageCommand=function(self,params)
+		local rate = getCurRateValue()
+		ChangeMusicRate(rate,params)
+	end,
+}
 return t;

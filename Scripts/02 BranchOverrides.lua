@@ -18,7 +18,23 @@ Branch.PlayerOptions= function()
 	if SCREENMAN:GetTopScreen():GetGoToOptions() then
 		return optionsScreen
 	else
-		return "ScreenStageInformation"
+		if themeConfig:get_data().global.FadeIn then
+			return "ScreenStageInformation"
+		else
+			return IsRoutine() and "ScreenGameplayShared" or "ScreenGameplay"
+		end
+	end
+end
+
+Branch.AfterSelectMusic = function()
+	if SCREENMAN:GetTopScreen():GetGoToOptions() then
+		return SelectFirstOptionsScreen()
+	else
+		if themeConfig:get_data().global.FadeIn then
+			return "ScreenStageInformation"
+		else
+			return IsRoutine() and "ScreenGameplayShared" or "ScreenGameplay"
+		end
 	end
 end
 

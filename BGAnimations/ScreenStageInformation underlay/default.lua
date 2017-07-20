@@ -1,3 +1,7 @@
+
+if not themeConfig:get_data().global.FadeIn then
+	return Def.ActorFrame {};
+end
 local playMode = GAMESTATE:GetPlayMode()
 local slideTime = 1.1;
 local slideWait = 1.25;

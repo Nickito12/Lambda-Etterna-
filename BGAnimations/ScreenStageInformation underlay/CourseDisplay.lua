@@ -3,6 +3,11 @@ local slideTime = 1.1;
 local slideWait = 1.25;
 local bottomSlide = 0.76;
 local course = GAMESTATE:GetCurrentCourse()
+if not themeConfig:get_data().global.FadeIn then
+	slideTime = 0;
+	slideWait = 0;
+	bottomSlide = 0;
+end
 
 local t = Def.ActorFrame{
 	-- background

@@ -109,4 +109,6 @@ local t = Def.ActorFrame {};
 
 	t[#t+1] = StandardDecorationFromFileOptional("StageDisplay","StageDisplay");
 	t[#t+1]= LoadActor(THEME:GetPathG("", "pause_menu"))
+t[#t+1] = LoadActor("WifeJudgmentSpotting")
+t[#t+1] = LoadActor("titlesplash")
 return t
