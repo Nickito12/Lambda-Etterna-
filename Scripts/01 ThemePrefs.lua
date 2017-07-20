@@ -474,10 +474,12 @@ function CustomizeGameplay()
 			else
 				list[1] = true
 			end
+			PREFSMAN:SetPreference("AutoPlay", (list[2] and 1 or 0))
 		end,
 		SaveSelections = function(self, list, pn)
 			local value
 			value = list[2]
+			PREFSMAN:SetPreference("AutoPlay", (list[2] and 1 or 0))
 			playerConfig:get_data(pn_to_profile_slot(pn)).CustomizeGameplay = value
 			playerConfig:set_dirty(pn_to_profile_slot(pn))
 			playerConfig:save(pn_to_profile_slot(pn))
