@@ -1,5 +1,72 @@
 local t = LoadFallbackB();
 
+function gradestring(tier) --to be moved
+	if tier == "Grade_Tier01" then
+		return 'AAAA'
+ 	elseif tier == "Grade_Tier02" then
+  		return 'AAA'
+ 	elseif tier == "Grade_Tier03" then
+  		return 'AA'
+ 	elseif tier == "Grade_Tier04" then
+  		return 'A'
+ 	elseif tier == "Grade_Tier05" then
+  		return 'B'
+ 	elseif tier == "Grade_Tier06" then
+  		return 'C'
+ 	elseif tier == "Grade_Tier07" then
+  		return 'D'
+ 	else
+  		return 'F'
+	end
+end
+local function GetBestScoreByFilter(perc,CurRate)
+	local rtTable = getRateTable()
+	if not rtTable then return nil end
+	
+	local rates = tableKeys(rtTable)
+	local scores, score
+	
+	if CurRate then
+		local tmp = getCurRateString()
+		if tmp == "1x" then tmp = "1.0x" end
+		rates = {tmp}
+		if not rtTable[rates[1]] then return nil end
+	end
+	
+	table.sort(rates)
+	for i=#rates,1,-1 do
+		scores = rtTable[rates[i]]
+		local bestscore = 0
+		local index
+		
+		for ii=1,#scores do
+			score = scores[ii]
+			if score:ConvertDpToWife() > bestscore then
+				index = ii
+				bestscore = score:ConvertDpToWife()
+			end
+		end
+		
+		if index and scores[index]:GetWifeScore() == 0 and GetPercentDP(scores[index]) > perc * 100 then
+			return scores[index]
+		end
+		
+		if bestscore > perc then
+			return scores[index]
+		end
+	end		
+end
+
+local function GetDisplayScore()
+	local score
+	score = GetBestScoreByFilter(0, true)
+	
+	if not score then score = GetBestScoreByFilter(0.9, false) end
+	if not score then score = GetBestScoreByFilter(0.5, false) end
+	if not score then score = GetBestScoreByFilter(0, false) end
+	return score
+end
+
 -- Banner underlay
 -- t[#t+1] = Def.ActorFrame {
     -- InitCommand=cmd(x,SCREEN_CENTER_X-230;draworder,125);
@@ -85,7 +152,7 @@ if not GAMESTATE:IsCourseMode() then
 
 -- P1 Difficulty Pane
 t[#t+1] = Def.ActorFrame {
-		InitCommand=cmd(visible,GAMESTATE:IsHumanPlayer(PLAYER_1);horizalign,center;x,SCREEN_CENTER_X-210;y,SCREEN_CENTER_Y+230;);
+		InitCommand=cmd(visible,GAMESTATE:IsHumanPlayer(PLAYER_1);horizalign,center;x,SCREEN_CENTER_X-210;y,SCREEN_CENTER_Y+210;);
 		OnCommand=cmd(zoomy,0.8;diffusealpha,0;smooth,0.4;diffusealpha,1;zoomy,1);
 		PlayerJoinedMessageCommand=function(self,param)
 			if param.Player == PLAYER_1 then
@@ -94,8 +161,9 @@ t[#t+1] = Def.ActorFrame {
 		end;
 		OffCommand=cmd(decelerate,0.3;zoomy,0.8;diffusealpha,0);
 		LoadActor("_diffnum")..{
+			InitCommand=cmd(zoomy,1.25;addy,20;);
 			CurrentStepsP1ChangedMessageCommand=cmd(queuecommand,"Set";); 
-			PlayerJoinedMessageCommand=cmd(queuecommand,"Set";diffusealpha,0;decelerate,0.3;diffusealpha,1;);
+			PlayerJoinedMessageCommand=cmd(queuecommand,"Set";diffusealpha,0;decelerate,0.3;diffusealpha,1);
 			ChangedLanguageDisplayMessageCommand=cmd(queuecommand,"Set");
 			SetCommand=function(self)
 					stepsP1 = GAMESTATE:GetCurrentSteps(PLAYER_1)
@@ -186,6 +254,41 @@ t[#t+1] = Def.ActorFrame {
 				end
 			  end
 		};
+		LoadFont("Common Normal") .. { 
+			  InitCommand=cmd(uppercase,true;zoom,1;addy,70;addx,-143;diffuse,color("#000000"););
+			  OnCommand=cmd(diffusealpha,0;smooth,0.2;diffusealpha,0.75;);
+			  OffCommand=cmd(linear,0.3;diffusealpha,0;);
+			  CurrentStepsP1ChangedMessageCommand=cmd(queuecommand,"Set";); 
+			  CurrentSongChangedMessageCommand=cmd(queuecommand,"Set";); 
+			  PlayerJoinedMessageCommand=cmd(queuecommand,"Set";diffusealpha,0;linear,0.3;diffusealpha,0.75;);
+			  ChangedLanguageDisplayMessageCommand=cmd(queuecommand,"Set");
+			  SetCommand=function(self)
+				local score = GetDisplayScore()
+				local song = GAMESTATE:GetCurrentSong();
+				if song and score then
+					self:settextf("%05.2f%%", notShit.floor(score:GetWifeScore()*10000)/100)
+				else
+					self:settext("")
+				end
+			  end
+		};
+		LoadFont("StepsDisplay meter") .. { 
+			  InitCommand=cmd(zoom,1;diffuse,color("#000000");addx,-143;addy,45);
+			  OnCommand=cmd(diffusealpha,0;smooth,0.2;diffusealpha,0.75;);
+			  OffCommand=cmd(linear,0.3;diffusealpha,0;);
+			  CurrentStepsP1ChangedMessageCommand=cmd(queuecommand,"Set";); 
+			  PlayerJoinedMessageCommand=cmd(queuecommand,"Set";diffusealpha,0;linear,0.3;diffusealpha,0.75;);
+			  ChangedLanguageDisplayMessageCommand=cmd(queuecommand,"Set");
+			  SetCommand=function(self)
+				local song = GAMESTATE:GetCurrentSong();
+				local score = GetDisplayScore()
+				if song and score then
+						self:settext(gradestring(score:GetWifeGrade()))
+				else
+					self:settext("")
+				end
+			  end
+		};
 	};
 	
 -- P2 Difficulty Pane	
@@ -199,7 +302,7 @@ t[#t+1] = Def.ActorFrame {
 		end;
 		OffCommand=cmd(decelerate,0.3;zoomy,0.8;diffusealpha,0);
 		LoadActor("_diffnum")..{
-			InitCommand=cmd(zoomx,-1;);
+			InitCommand=cmd(zoomx,-1;zoomy,1.25;);
 			CurrentStepsP2ChangedMessageCommand=cmd(queuecommand,"Set";); 
 			PlayerJoinedMessageCommand=cmd(queuecommand,"Set";diffusealpha,0;decelerate,0.3;diffusealpha,1;);
 			ChangedLanguageDisplayMessageCommand=cmd(queuecommand,"Set");

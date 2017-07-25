@@ -135,25 +135,25 @@ for ip, p in ipairs(GAMESTATE:GetHumanPlayers()) do
 	-- Primary score.
 	eval_parts[#eval_parts+1] = Def.BitmapText {
 		Font = "_overpass 36px",
-		InitCommand=cmd(horizalign,center;x,_screen.cx + (grade_parts_offs);y,(_screen.cy-65);diffuse,ColorMidTone(PlayerColor(p));zoom,1;shadowlength,1),
+		InitCommand=cmd(horizalign,center;x,_screen.cx + (grade_parts_offs);y,(_screen.cy-65);diffuse,ColorMidTone(PlayerColor(p));zoom,0.75;shadowlength,1),
 		OnCommand=function(self)
-			self:settext(GetPlScore(p, "primary")):diffusealpha(0):sleep(0.5):decelerate(0.3):diffusealpha(1)
+			self:settextf("%05.2f%% (%s)",STATSMAN:GetCurStageStats():GetPlayerStageStats(ip):GetWifeScore()*10000/100, "Wife"):diffusealpha(0):sleep(0.5):decelerate(0.3):diffusealpha(1)
 		end;
 		OffCommand=function(self)
 			self:decelerate(0.3):diffusealpha(0)
 		end;
 	}
 	-- Secondary score.
-	eval_parts[#eval_parts+1] = Def.BitmapText {
-		Font = "_overpass 36px",
-		InitCommand=cmd(horizalign,center;x,_screen.cx + (grade_parts_offs);y,(_screen.cy-65)+30;diffuse,ColorDarkTone(PlayerColor(p));zoom,0.75;shadowlength,1),
-		OnCommand=function(self)
-			self:settext(GetPlScore(p, "secondary")):diffusealpha(0):sleep(0.6):decelerate(0.3):diffusealpha(1)
-		end;
-		OffCommand=function(self)
-			self:sleep(0.1):decelerate(0.3):diffusealpha(0)
-		end;
-	}
+	--eval_parts[#eval_parts+1] = Def.BitmapText {
+	--	Font = "_overpass 36px",
+	--	InitCommand=cmd(horizalign,center;x,_screen.cx + (grade_parts_offs);y,(_screen.cy-65)+30;diffuse,ColorDarkTone(PlayerColor(p));zoom,0.75;shadowlength,1),
+	--	OnCommand=function(self)
+	--		self:settext(GetPlScore(p, "secondary")):diffusealpha(0):sleep(0.6):decelerate(0.3):diffusealpha(1)
+	--	end;
+	--	OffCommand=function(self)
+	--		self:sleep(0.1):decelerate(0.3):diffusealpha(0)
+	--	end;
+	--}
 	
 	-- Letter grade and associated parts.
 	eval_parts[#eval_parts+1] = Def.ActorFrame{
