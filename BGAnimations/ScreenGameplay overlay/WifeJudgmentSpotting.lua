@@ -1,18 +1,25 @@
 --[[ 
 	Basically rewriting the c++ code to not be total shit so this can also not be total shit.
 ]]
-	
 --local jcKeys = tableKeys(colorConfig:get_data().judgment)
 --local jcT = {}										-- A "T" following a variable name will designate an object of type table.
 
-local jcT = { -- Colors of each Judgment types
-	TapNoteScore_W1 = JudgmentLineToColor("JudgmentLine_W1"),--"#99ccff",
-	TapNoteScore_W2	= JudgmentLineToColor("JudgmentLine_W2"),--"#f2cb30",
-	TapNoteScore_W3	 = JudgmentLineToColor("JudgmentLine_W3"),--"#14cc8f",
-	TapNoteScore_W4	= JudgmentLineToColor("JudgmentLine_W4"),--"#1ab2ff",
-	TapNoteScore_W5	= JudgmentLineToColor("JudgmentLine_W5"),--"#ff1ab3",
-	TapNoteScore_Miss = JudgmentLineToColor("JudgmentLine_Miss"),--"#cc2929",			
-	HoldNoteScore_Held = JudgmentLineToColor("JudgmentLine_Held"),--"#f2cb30",	
+local jcT = {
+	-- Colors of each Judgment types
+	TapNoteScore_W1 = JudgmentLineToColor("JudgmentLine_W1"),
+	--"#99ccff",
+	TapNoteScore_W2 = JudgmentLineToColor("JudgmentLine_W2"),
+	--"#f2cb30",
+	TapNoteScore_W3 = JudgmentLineToColor("JudgmentLine_W3"),
+	--"#14cc8f",
+	TapNoteScore_W4 = JudgmentLineToColor("JudgmentLine_W4"),
+	--"#1ab2ff",
+	TapNoteScore_W5 = JudgmentLineToColor("JudgmentLine_W5"),
+	--"#ff1ab3",
+	TapNoteScore_Miss = JudgmentLineToColor("JudgmentLine_Miss"),
+	--"#cc2929",
+	HoldNoteScore_Held = JudgmentLineToColor("JudgmentLine_Held"),
+	--"#f2cb30",
 	HoldNoteScore_LetGo = color("#cc2929")
 }
 function byJudgment(judge)
@@ -22,7 +29,8 @@ end
 --	jcT[jcKeys[i]] = byJudgment(jcKeys[i])
 --end
 
-local jdgT = {										-- Table of judgments for the judgecounter 
+local jdgT = {
+	-- Table of judgments for the judgecounter
 	"TapNoteScore_W1",
 	"TapNoteScore_W2",
 	"TapNoteScore_W3",
@@ -30,11 +38,11 @@ local jdgT = {										-- Table of judgments for the judgecounter
 	"TapNoteScore_W5",
 	"TapNoteScore_Miss",
 	"HoldNoteScore_Held",
-	"HoldNoteScore_LetGo",
+	"HoldNoteScore_LetGo"
 }
 
-local dvCur																	
-local jdgCur																-- Note: only for judgments with OFFSETS, might reorganize a bit later
+local dvCur
+local jdgCur  -- Note: only for judgments with OFFSETS, might reorganize a bit later
 local positive = jcT["TapNoteScore_W1"]
 local highlight = jcT["HoldNoteScore_Held"]
 local negative = jcT["TapNoteScore_Miss"]
@@ -58,29 +66,33 @@ isCentered = PREFSMAN:GetPreference("Center1Player")
 local CenterX = SCREEN_CENTER_X
 local mpOffset = 0
 if not isCentered then
-	CenterX = THEME:GetMetric("ScreenGameplay",string.format("PlayerP1%sX",ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType())))
+	CenterX =
+		THEME:GetMetric(
+		"ScreenGameplay",
+		string.format("PlayerP1%sX", ToEnumShortString(GAMESTATE:GetCurrentStyle():GetStyleType()))
+	)
 	mpOffset = SCREEN_CENTER_X
 end
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
 
 -- Those are the X and Y for things that are going to be able to be moved with the listener
-local eb     -- Errorbar children
-local dt     -- Differential tracker children
-local mb     -- Minibar actor frame
-local fb     -- Fullbar actor frame
-local dp 	 -- Display percent actor frame
+local eb  -- Errorbar children
+local dt  -- Differential tracker children
+local mb  -- Minibar actor frame
+local fb  -- Fullbar actor frame
+local dp  -- Display percent actor frame
 
-local screen 			-- the screen after it is loaded
-local messageBox		-- the message box from when you try to move something
-local judgeCounter      -- pa counter actor frame
+local screen  -- the screen after it is loaded
+local messageBox  -- the message box from when you try to move something
+local judgeCounter  -- pa counter actor frame
 
 --error bar things
-local errorBarX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ErrorBarX 								
+local errorBarX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ErrorBarX
 local errorBarY = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ErrorBarY
-local errorBarWidth = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarWidth         -- felt like this is necessary in order to do stuff
-local errorBarHeight = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarHeight 								
-local errorBarFrameWidth = capWideScale(get43size(errorBarWidth),errorBarWidth)
-local wscale = errorBarFrameWidth/180
+local errorBarWidth = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarWidth -- felt like this is necessary in order to do stuff
+local errorBarHeight = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarHeight
+local errorBarFrameWidth = capWideScale(get43size(errorBarWidth), errorBarWidth)
+local wscale = errorBarFrameWidth / 180
 
 --percent display things
 local displayPercentX = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.DisplayPercentX
@@ -248,15 +260,15 @@ local function firstHalfInput(event)
 			end
 			if event.DeviceInput.button == "DeviceButton_left" then
 				errorBarWidth = errorBarWidth - 10
-				errorBarFrameWidth = capWideScale(get43size(errorBarWidth),errorBarWidth)
-				wscale = errorBarFrameWidth/180
+				errorBarFrameWidth = capWideScale(get43size(errorBarWidth), errorBarWidth)
+				wscale = errorBarFrameWidth / 180
 				playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarWidth = errorBarWidth
 				changed = true
 			end
 			if event.DeviceInput.button == "DeviceButton_right" then
 				errorBarWidth = errorBarWidth + 10
-				errorBarFrameWidth = capWideScale(get43size(errorBarWidth),errorBarWidth)
-				wscale = errorBarFrameWidth/180
+				errorBarFrameWidth = capWideScale(get43size(errorBarWidth), errorBarWidth)
+				wscale = errorBarFrameWidth / 180
 				playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ErrorBarWidth = errorBarWidth
 				changed = true
 			end
@@ -406,7 +418,6 @@ local function firstHalfInput(event)
 				changed = false
 			end
 		end
-		
 	end
 	return false
 end
@@ -645,21 +656,20 @@ local function secondHalfInput(event)
 	return false
 end
 
-
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 								     **Wife deviance tracker. Basically half the point of the theme.**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	For every doot there is an equal and opposite scoot.
 ]]
-
-local t = Def.ActorFrame{										
+local t =
+	Def.ActorFrame {
 	Name = "WifePerch",
-	OnCommand=function()
+	OnCommand = function()
 		if not IsNetSMOnline() then
 			SCREENMAN:GetTopScreen():AddInputCallback(froot)
 		end
-		if(playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).CustomizeGameplay) then
+		if (playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).CustomizeGameplay) then
 			SCREENMAN:GetTopScreen():AddInputCallback(firstHalfInput)
 			SCREENMAN:GetTopScreen():AddInputCallback(secondHalfInput)
 		end
@@ -673,13 +683,13 @@ local t = Def.ActorFrame{
 			actor:zoomtoheight(noteFieldHeight)
 		end
 	end,
-	JudgmentMessageCommand=function(self, msg)
+	JudgmentMessageCommand = function(self, msg)
 		if msg.Offset ~= nil then
-			dvCur = msg.Offset 
+			dvCur = msg.Offset
 			jdgCur = msg.Judgment
 			Broadcast(MESSAGEMAN, "SpottedOffset")
 		end
-	end,
+	end
 }
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -688,76 +698,82 @@ local t = Def.ActorFrame{
 
 	Old scwh lanecover back for now. Equivalent to "screencutting" on ffr; essentially hides notes for a fixed distance before they appear
 on screen so you can adjust the time arrows display on screen without modifying their spacing from each other. 
-]]	
-	
-t[#t+1] = LoadActor("lanecover")
+]]
+t[#t + 1] = LoadActor("lanecover")
 
-	
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  					    	**Player Target Differential: Ghost target rewrite, average score gone for now**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	Point differential to AA.
 ]]
-
 -- Mostly clientside now. We set our desired target goal and listen to the results rather than calculating ourselves.
 local target = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).TargetGoal
-GAMESTATE:GetPlayerState(PLAYER_1):SetTargetGoal(target/100)
+GAMESTATE:GetPlayerState(PLAYER_1):SetTargetGoal(target / 100)
 
 -- We can save space by wrapping the personal best and set percent trackers into one function, however
 -- this would make the actor needlessly cumbersome and unnecessarily punish those who don't use the
 -- personal best tracker (although everything is efficient enough now it probably wouldn't matter)
 
 -- moved it for better manipulation
-local d = Def.ActorFrame{
+local d =
+	Def.ActorFrame {
 	InitCommand = function(self)
 		dt = self:GetChildren()
-	end,
+	end
 }
 
 if targetTrackerMode == 0 then
-	d[#d+1] = LoadFont("Common Normal")..{
-		Name = "PercentDifferential",
-		InitCommand=cmd(xy,targetTrackerX,targetTrackerY;zoom,targetTrackerZoom;halign,0;valign,1),
-		JudgmentMessageCommand=function(self,msg)
-			local tDiff = msg.WifeDifferential
-			if tDiff >= 0 then 											
-				diffuse(self,positive)
-			else
-				diffuse(self,negative)
-			end
-			self:settextf("%5.2f (%5.2f%%)", tDiff, target)
-		end
-	}
-	else
-	d[#d+1] = LoadFont("Common Normal")..{
-		Name = "PBDifferential",
-		InitCommand=cmd(xy,targetTrackerX,targetTrackerY;zoom,targetTrackerZoom;halign,0;valign,1),
-		JudgmentMessageCommand=function(self,msg)
-			local tDiff = msg.WifePBDifferential
-			if tDiff then
-				local pbtarget = msg.WifePBGoal
+	d[#d + 1] =
+		LoadFont("Common Normal") ..
+		{
+			Name = "PercentDifferential",
+			InitCommand = function(self)
+				self:xy(targetTrackerX, targetTrackerY):zoom(targetTrackerZoom):halign(0):valign(1)
+			end,
+			JudgmentMessageCommand = function(self, msg)
+				local tDiff = msg.WifeDifferential
 				if tDiff >= 0 then
-					diffuse(self,color("#00ff00"))
+					diffuse(self, positive)
 				else
-					diffuse(self,negative)
-				end
-				self:settextf("%5.2f (%5.2f%%)", tDiff, pbtarget*100)
-			else
-				tDiff = msg.WifeDifferential
-				if tDiff >= 0 then 											
-					diffuse(self,positive)
-				else
-					diffuse(self,negative)
+					diffuse(self, negative)
 				end
 				self:settextf("%5.2f (%5.2f%%)", tDiff, target)
 			end
-		end
-	}
+		}
+else
+	d[#d + 1] =
+		LoadFont("Common Normal") ..
+		{
+			Name = "PBDifferential",
+			InitCommand = function(self)
+				self:xy(targetTrackerX, targetTrackerY):zoom(targetTrackerZoom):halign(0):valign(1)
+			end,
+			JudgmentMessageCommand = function(self, msg)
+				local tDiff = msg.WifePBDifferential
+				if tDiff then
+					local pbtarget = msg.WifePBGoal
+					if tDiff >= 0 then
+						diffuse(self, color("#00ff00"))
+					else
+						diffuse(self, negative)
+					end
+					self:settextf("%5.2f (%5.2f%%)", tDiff, pbtarget * 100)
+				else
+					tDiff = msg.WifeDifferential
+					if tDiff >= 0 then
+						diffuse(self, positive)
+					else
+						diffuse(self, negative)
+					end
+					self:settextf("%5.2f (%5.2f%%)", tDiff, target)
+				end
+			end
+		}
 end
 
 if enabledTargetTracker then
-	t[#t+1] = d
+	t[#t + 1] = d
 end
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -765,30 +781,37 @@ end
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Displays the current percent for the score.
 ]]
-
-local cp = Def.ActorFrame{
+local cp =
+	Def.ActorFrame {
 	InitCommand = function(self)
 		dp = self
 		self:zoom(displayPercentZoom):addx(displayPercentX):addy(displayPercentY)
 	end,
-	Def.Quad{
-		InitCommand=cmd(xy,60 + mpOffset,(SCREEN_HEIGHT*0.62)-90;;zoomto, 60, 13;diffuse,color("0,0,0,0.4");horizalign,left;vertalign,top)
-	},
-	-- Displays your current percentage score
-	LoadFont("Common Large")..{											
-		Name = "DisplayPercent",
-		InitCommand=cmd(xy,115 + mpOffset,220;zoom,0.3;halign,1;valign,1),
-		OnCommand=function(self)
-			self:settextf("%05.2f%%", 0)
-		end,
-		JudgmentMessageCommand=function(self,msg)
-			self:settextf("%05.2f%%", Floor(msg.WifePercent*100)/100)
+	Def.Quad {
+		InitCommand = function(self)
+			self:xy(60 + mpOffset, (SCREEN_HEIGHT * 0.62) - 90):zoomto(60, 13):diffuse(color("0,0,0,0.4")):horizalign(left):vertalign(
+				top
+			)
 		end
 	},
+	-- Displays your current percentage score
+	LoadFont("Common Large") ..
+		{
+			Name = "DisplayPercent",
+			InitCommand = function(self)
+				self:xy(115 + mpOffset, 220):zoom(0.3):halign(1):valign(1)
+			end,
+			OnCommand = function(self)
+				self:settextf("%05.2f%%", 0)
+			end,
+			JudgmentMessageCommand = function(self, msg)
+				self:settextf("%05.2f%%", Floor(msg.WifePercent * 100) / 100)
+			end
+		}
 }
 
 if enabledDisplayPercent then
-	t[#t+1] = cp
+	t[#t + 1] = cp
 end
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -796,70 +819,82 @@ end
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	Counts judgments.
 --]]
-
 -- User Parameters
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
-local frameX = 60 + mpOffset						 -- X position of the frame
-local frameY = (SCREEN_HEIGHT*0.62)-90 				 -- Y Position of the frame
-local spacing = 10									 -- Spacing between the judgetypes
-local frameWidth = 60								 -- Width of the Frame
-local frameHeight = ((#jdgT-1)*spacing)	- 8			 -- Height of the Frame
-local judgeFontSize = 0.40							 -- Font sizes for different text elements 
+local frameX = 60 + mpOffset -- X position of the frame
+local frameY = (SCREEN_HEIGHT * 0.62) - 90 -- Y Position of the frame
+local spacing = 10 -- Spacing between the judgetypes
+local frameWidth = 60 -- Width of the Frame
+local frameHeight = ((#jdgT - 1) * spacing) - 8 -- Height of the Frame
+local judgeFontSize = 0.40 -- Font sizes for different text elements
 local countFontSize = 0.35
 local gradeFontSize = 0.45
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
 
-local jdgCounts = {}								 -- Child references for the judge counter
+local jdgCounts = {} -- Child references for the judge counter
 
-local j = Def.ActorFrame{
-	InitCommand=function(self)
+local j =
+	Def.ActorFrame {
+	InitCommand = function(self)
 		judgeCounter = self
 		self:addx(judgeCounterX):addy(judgeCounterY)
 	end,
-	OnCommand=function(self)
-		for i=1,#jdgT do
+	OnCommand = function(self)
+		for i = 1, #jdgT do
 			jdgCounts[jdgT[i]] = self:GetChild(jdgT[i])
 		end
 	end,
-	JudgmentMessageCommand=function(self, msg)
+	JudgmentMessageCommand = function(self, msg)
 		if jdgCounts[msg.Judgment] then
-			settext(jdgCounts[msg.Judgment],msg.Val)
+			settext(jdgCounts[msg.Judgment], msg.Val)
 		end
-	end																		
-}																					
+	end
+}
 
- local function makeJudgeText(judge,index)		-- Makes text
- 	return LoadFont("Common normal")..{
- 		InitCommand=cmd(xy,frameX+5,frameY+7+(index*spacing);zoom,judgeFontSize;halign,0),
- 		OnCommand=function(self)
- 			settext(self,getShortJudgeStrings(judge))
- 			diffuse(self,jcT[judge])
- 		end
- 	}
- end
- 
- local function makeJudgeCount(judge,index)		-- Makes county things for taps....
- 	return LoadFont("Common Normal")..{
- 		Name = judge,
-		InitCommand=cmd(xy,frameWidth+frameX-5,frameY+7+(index*spacing);zoom,countFontSize;horizalign,right;settext,0) 	}
- end
+local function makeJudgeText(judge, index) -- Makes text
+	return LoadFont("Common normal") ..
+		{
+			InitCommand = function(self)
+				self:xy(frameX + 5, frameY + 7 + (index * spacing)):zoom(judgeFontSize):halign(0)
+			end,
+			OnCommand = function(self)
+				settext(self, getShortJudgeStrings(judge))
+				diffuse(self, jcT[judge])
+			end
+		}
+end
 
+local function makeJudgeCount(judge, index) -- Makes county things for taps....
+	return LoadFont("Common Normal") ..
+		{
+			Name = judge,
+			InitCommand = function(self)
+				self:xy(frameWidth + frameX - 5, frameY + 7 + (index * spacing)):zoom(countFontSize):horizalign(right):settext(0)
+			end
+		}
+end
 
 -- Background
-j[#j+1] = Def.Quad{InitCommand=cmd(xy,frameX,frameY+13;zoomto,frameWidth,frameHeight+18;diffuse,color("0,0,0,0.4");horizalign,left;vertalign,top)}
+
+j[#j + 1] =
+	Def.Quad {
+	InitCommand = function(self)
+		self:xy(frameX, frameY + 13):zoomto(frameWidth, frameHeight + 18):diffuse(color("0,0,0,0.4")):horizalign(left):vertalign(
+			top
+		)
+	end
+}
 
 -- Build judgeboard
-for i=1,#jdgT do
-	j[#j+1] = makeJudgeText(jdgT[i],i)
-	j[#j+1] = makeJudgeCount(jdgT[i],i)
+for i = 1, #jdgT do
+	j[#j + 1] = makeJudgeText(jdgT[i], i)
+	j[#j + 1] = makeJudgeCount(jdgT[i], i)
 end
 
 -- Now add the completed judgment table to the primary actor frame t if enabled
 if enabledJudgeCounter then
-	t[#t+1] = j
+	t[#t + 1] = j
 end
-
-
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 														    	**Player ErrorBar**
@@ -867,82 +902,95 @@ end
 
 	Visual display of deviance values. 
 --]]
-
 -- User Parameters
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
-local barcount = 30 									-- Number of bars. Older bars will refresh if judgments/barDuration exceeds this value. You don't need more than 40.
-local barWidth = 2										-- Width of the ticks.
-local barDuration = 0.75 								-- Time duration in seconds before the ticks fade out. Doesn't need to be higher than 1. Maybe if you have 300 bars I guess.
+local barcount = 30 -- Number of bars. Older bars will refresh if judgments/barDuration exceeds this value. You don't need more than 40.
+local barWidth = 2 -- Width of the ticks.
+local barDuration = 0.75 -- Time duration in seconds before the ticks fade out. Doesn't need to be higher than 1. Maybe if you have 300 bars I guess.
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
-local currentbar = 1 									-- so we know which error bar we need to update
-local ingots = {}										-- references to the error bars
+local currentbar = 1 -- so we know which error bar we need to update
+local ingots = {} -- references to the error bars
 
 -- Makes the error bars. They position themselves relative to the center of the screen based on your dv and diffuse to your judgement value before disappating or refreshing
 -- Should eventually be handled by the game itself to optimize performance
 function smeltErrorBar(index)
-	return Def.Quad{
+	return Def.Quad {
 		Name = index,
-		InitCommand=cmd(xy,errorBarX,errorBarY;zoomto,barWidth,errorBarHeight;diffusealpha,0),
-		UpdateErrorBarCommand=function(self)						-- probably a more efficient way to achieve this effect, should test stuff later
-			finishtweening(self)									-- note: it really looks like shit without the fade out 
-			diffusealpha(self,1)
-			diffuse(self,jcT[jdgCur])
-			x(self,errorBarX+dvCur*wscale)
-			self:y(errorBarY)  -- i dont know why man it doenst work the other way ( y(self,errorBarY) )
+		InitCommand = function(self)
+			self:xy(errorBarX, errorBarY):zoomto(barWidth, errorBarHeight):diffusealpha(0)
+		end,
+		UpdateErrorBarCommand = function(self) -- probably a more efficient way to achieve this effect, should test stuff later
+			finishtweening(self) -- note: it really looks like shit without the fade out
+			diffusealpha(self, 1)
+			diffuse(self, jcT[jdgCur])
+			x(self, errorBarX + dvCur * wscale)
+			self:y(errorBarY) -- i dont know why man it doenst work the other way ( y(self,errorBarY) )
 			self:zoomtoheight(errorBarHeight)
-			linear(self,barDuration)
-			diffusealpha(self,0)
+			linear(self, barDuration)
+			diffusealpha(self, 0)
 		end
 	}
 end
 
-local e = Def.ActorFrame{										
+local e =
+	Def.ActorFrame {
 	InitCommand = function(self)
 		eb = self:GetChildren()
-		for i=1,barcount do											-- basically the equivalent of using GetChildren() if it returned unnamed children numerically indexed
-			ingots[#ingots+1] = self:GetChild(i)
+		for i = 1, barcount do -- basically the equivalent of using GetChildren() if it returned unnamed children numerically indexed
+			ingots[#ingots + 1] = self:GetChild(i)
 		end
 	end,
-	SpottedOffsetMessageCommand=function(self)				
-		currentbar = ((currentbar)%barcount) + 1
-		playcommand(ingots[currentbar],"UpdateErrorBar")			-- Update the next bar in the queue
+	SpottedOffsetMessageCommand = function(self)
+		currentbar = ((currentbar) % barcount) + 1
+		playcommand(ingots[currentbar], "UpdateErrorBar") -- Update the next bar in the queue
 	end,
-	DootCommand=function(self)
+	DootCommand = function(self)
 		self:RemoveChild("DestroyMe")
 		self:RemoveChild("DestroyMe2")
 	end,
-
 	Def.Quad {
 		Name = "Center",
-		InitCommand=cmd(diffuse,highlight;xy,errorBarX,errorBarY;zoomto,2,errorBarHeight)
+		InitCommand = function(self)
+			self:diffuse(highlight):xy(errorBarX, errorBarY):zoomto(2, errorBarHeight)
+		end
 	},
 	-- Indicates which side is which (early/late) These should be destroyed after the song starts.
-	LoadFont("Common Normal") .. {
-		Name = "DestroyMe",
-		InitCommand=cmd(xy,errorBarX+errorBarFrameWidth/4,errorBarY;zoom,0.35),
-		BeginCommand=cmd(settext,"Late";diffusealpha,0;smooth,0.5;diffusealpha,0.5;sleep,1.5;smooth,0.5;diffusealpha,0),
-	},
-	LoadFont("Common Normal") .. {
-		Name = "DestroyMe2",
-		InitCommand=cmd(xy,errorBarX-errorBarFrameWidth/4,errorBarY;zoom,0.35),
-		BeginCommand=cmd(settext,"Early";diffusealpha,0;smooth,0.5;diffusealpha,0.5;sleep,1.5;smooth,0.5;diffusealpha,0;queuecommand,"Doot"),
-		DootCommand=function(self)
-			self:GetParent():queuecommand("Doot")
-		end
-	}
+	LoadFont("Common Normal") ..
+		{
+			Name = "DestroyMe",
+			InitCommand = function(self)
+				self:xy(errorBarX + errorBarFrameWidth / 4, errorBarY):zoom(0.35)
+			end,
+			BeginCommand = function(self)
+				self:settext("Late"):diffusealpha(0):smooth(0.5):diffusealpha(0.5):sleep(1.5):smooth(0.5):diffusealpha(0)
+			end
+		},
+	LoadFont("Common Normal") ..
+		{
+			Name = "DestroyMe2",
+			InitCommand = function(self)
+				self:xy(errorBarX - errorBarFrameWidth / 4, errorBarY):zoom(0.35)
+			end,
+			BeginCommand = function(self)
+				self:settext("Early"):diffusealpha(0):smooth(0.5):diffusealpha(0.5):sleep(1.5):smooth(0.5):diffusealpha(0):queuecommand(
+					"Doot"
+				)
+			end,
+			DootCommand = function(self)
+				self:GetParent():queuecommand("Doot")
+			end
+		}
 }
 
 -- Initialize bars
-for i=1,barcount do
-	e[#e+1] = smeltErrorBar(i)
+for i = 1, barcount do
+	e[#e + 1] = smeltErrorBar(i)
 end
 
 -- Add the completed errorbar frame to the primary actor frame t if enabled
 if enabledErrorBar then
-	t[#t+1] = e
+	t[#t + 1] = e
 end
-
-
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 															   **Player Info**
@@ -951,7 +999,7 @@ end
 	Avatar and such, now you can turn it off. Planning to have player mods etc exported similarly to the nowplaying, and an avatar only option
 ]]
 if playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).PlayerInfo then
-	t[#t+1] = LoadActor("playerinfo")
+	t[#t + 1] = LoadActor("playerinfo")
 end
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -961,53 +1009,72 @@ end
 	Song Completion Meter that doesn't eat 100 fps. Courtesy of simply love. Decided to make the full progress bar and mini progress bar
 separate entities. So you can have both, or one or the other, or neither. 
 ]]
- 
 -- User params
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
-local width = SCREEN_WIDTH/2-100
+local width = SCREEN_WIDTH / 2 - 100
 local height = 10
 local alpha = 0.7
 --==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--==--
 
-local p = Def.ActorFrame{
+local p =
+	Def.ActorFrame {
 	InitCommand = function(self)
-		self:xy(fullProgressBarX,fullProgressBarY)
-		self:zoomto(fullProgressBarWidth,fullProgressBarHeight)
+		self:xy(fullProgressBarX, fullProgressBarY)
+		self:zoomto(fullProgressBarWidth, fullProgressBarHeight)
 		fb = self
 	end,
-	Def.Quad{InitCommand=cmd(zoomto,width,height;diffuse,color("#666666");diffusealpha,alpha)},			-- background
-	Def.SongMeterDisplay{
-		InitCommand=function(self)
+	-- background
+	Def.Quad {
+		InitCommand = function(self)
+			self:zoomto(width, height):diffuse(color("#666666")):diffusealpha(alpha)
+		end
+	},
+	Def.SongMeterDisplay {
+		InitCommand = function(self)
 			self:SetUpdateRate(0.5)
 		end,
-		StreamWidth=width,
-		Stream=Def.Quad{InitCommand=cmd(zoomy,height;diffuse,highlight)}
+		StreamWidth = width,
+		Stream = Def.Quad {
+			InitCommand = function(self)
+				self:zoomy(height):diffuse(highlight)
+			end
+		}
 	},
-	LoadFont("Common Normal")..{																		-- title
-		InitCommand=cmd(zoom,0.35;maxwidth,width*2),
-		BeginCommand=cmd(settext,GAMESTATE:GetCurrentSong():GetDisplayMainTitle()),
-		DoneLoadingNextSongMessageCommand=cmd(settext,GAMESTATE:GetCurrentSong():GetDisplayMainTitle())
-	},
-	LoadFont("Common Normal")..{																		-- total time
-		InitCommand=cmd(x,width/2;zoom,0.35;maxwidth,width*2;halign,1),
-		BeginCommand=function(self)
-			local ttime = GetPlayableTime()
-			settext(self,SecondsToMMSS(ttime))
-			diffuse(self, ByMusicLength(ttime))
-		end,
-		DoneLoadingNextSongMessageCommand=function(self)
-			local ttime = GetPlayableTime()
-			settext(self,SecondsToMMSS(ttime))
-			diffuse(self, ByMusicLength(ttime))
-		end
-	}
+	LoadFont("Common Normal") ..
+		{
+			-- title
+			InitCommand = function(self)
+				self:zoom(0.35):maxwidth(width * 2)
+			end,
+			BeginCommand = function(self)
+				self:settext(GAMESTATE:GetCurrentSong():GetDisplayMainTitle())
+			end,
+			DoneLoadingNextSongMessageCommand = function(self)
+				self:settext(GAMESTATE:GetCurrentSong():GetDisplayMainTitle())
+			end
+		},
+	LoadFont("Common Normal") ..
+		{
+			-- total time
+			InitCommand = function(self)
+				self:x(width / 2):zoom(0.35):maxwidth(width * 2):halign(1)
+			end,
+			BeginCommand = function(self)
+				local ttime = GetPlayableTime()
+				settext(self, SecondsToMMSS(ttime))
+				diffuse(self, ByMusicLength(ttime))
+			end,
+			DoneLoadingNextSongMessageCommand = function(self)
+				local ttime = GetPlayableTime()
+				settext(self, SecondsToMMSS(ttime))
+				diffuse(self, ByMusicLength(ttime))
+			end
+		}
 }
 
 if enabledFullBar then
-	t[#t+1] = p
+	t[#t + 1] = p
 end
-
-
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 														      **Mini Progressbar**
@@ -1016,40 +1083,59 @@ end
 	Song Completion Meter that doesn't eat 100 fps. Courtesy of simply love. Decided to make the full progress bar and mini progress bar
 separate entities. So you can have both, or one or the other, or neither. 
 ]]
-
 local width = 34
 local height = 4
 local alpha = 0.3
 
-mb = Def.ActorFrame{
+mb =
+	Def.ActorFrame {
 	InitCommand = function(self)
-		self:xy(miniProgressBarX,miniProgressBarY)
+		self:xy(miniProgressBarX, miniProgressBarY)
 		mb = self
 	end,
-	Def.Quad{InitCommand=cmd(zoomto,width,height;diffuse,color("#666666");diffusealpha,alpha)}, 	-- background
-	Def.Quad{InitCommand=cmd(x,1+width/2;zoomto,1,height;diffuse,color("#555555"))},				-- ending indicator
-	Def.SongMeterDisplay{
-		InitCommand=function(self)
+	-- background
+	Def.Quad {
+		InitCommand = function(self)
+			self:zoomto(width, height):diffuse(color("#666666")):diffusealpha(alpha)
+		end
+	},
+	-- ending indicator
+	Def.Quad {
+		InitCommand = function(self)
+			self:x(1 + width / 2):zoomto(1, height):diffuse(color("#555555"))
+		end
+	},
+	Def.SongMeterDisplay {
+		InitCommand = function(self)
 			self:SetUpdateRate(0.5)
 		end,
-		StreamWidth=width,
-		Stream=Def.Quad{InitCommand=cmd(zoomy,height;diffuse,highlight)}
+		StreamWidth = width,
+		Stream = Def.Quad {
+			InitCommand = function(self)
+				self:zoomy(height):diffuse(highlight)
+			end
+		}
 	}
 }
 
 if enabledMiniBar then
-	t[#t+1] = mb
+	t[#t + 1] = mb
 end
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 														    	**Music Rate Display**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ]]
-
-t[#t+1] = LoadFont("Common Normal")..{
-	InitCommand=cmd(xy,SCREEN_CENTER_X,SCREEN_BOTTOM-10;zoom,0.35;settext,getCurRateDisplayString()),
-	DoneLoadingNextSongMessageCommand=cmd(settext,getCurRateDisplayString())
-}
+t[#t + 1] =
+	LoadFont("Common Normal") ..
+	{
+		InitCommand = function(self)
+			self:xy(SCREEN_CENTER_X, SCREEN_BOTTOM - 10):zoom(0.35):settext(getCurRateDisplayString())
+		end,
+		DoneLoadingNextSongMessageCommand = function(self)
+			self:settext(getCurRateDisplayString())
+		end
+	}
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 														    	**BPM Display**
@@ -1057,53 +1143,52 @@ t[#t+1] = LoadFont("Common Normal")..{
 
 	Better optimized frame update bpm display. 
 ]]
-
 local BPM
-local a = GAMESTATE:GetPlayerState(PLAYER_1):GetSongPosition()	
+local a = GAMESTATE:GetPlayerState(PLAYER_1):GetSongPosition()
 local r = GAMESTATE:GetSongOptionsObject("ModsLevel_Current"):MusicRate() * 60
 local GetBPS = SongPosition.GetCurBPS
 
 local function UpdateBPM(self)
 	local bpm = GetBPS(a) * r
-	settext(BPM,Round(bpm,2))
+	settext(BPM, Round(bpm, 2))
 end
 
-t[#t+1] = Def.ActorFrame{
-	InitCommand=function(self)
+t[#t + 1] =
+	Def.ActorFrame {
+	InitCommand = function(self)
 		BPM = self:GetChild("BPM")
-		if #GAMESTATE:GetCurrentSong():GetTimingData():GetBPMs() > 1 then			-- dont bother updating for single bpm files
+		if #GAMESTATE:GetCurrentSong():GetTimingData():GetBPMs() > 1 then -- dont bother updating for single bpm files
 			self:SetUpdateFunction(UpdateBPM)
 			self:SetUpdateRate(0.5)
 		else
-			settext(BPM,Round(GetBPS(a) * r,2))
+			settext(BPM, Round(GetBPS(a) * r, 2))
 		end
 	end,
-	LoadFont("Common Normal")..{
-		Name="BPM",
-		InitCommand=cmd(x,SCREEN_CENTER_X;y,SCREEN_BOTTOM-20;halign,0.5;zoom,0.40)
-	},
-	DoneLoadingNextSongMessageCommand=cmd(queuecommand,"Init")
+	LoadFont("Common Normal") ..
+		{
+			Name = "BPM",
+			InitCommand = function(self)
+				self:x(SCREEN_CENTER_X):y(SCREEN_BOTTOM - 20):halign(0.5):zoom(0.40)
+			end
+		},
+	DoneLoadingNextSongMessageCommand = function(self)
+		self:queuecommand("Init")
+	end
 }
-
-
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 															**Combo Display**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ]]
-
 local x = 0
 local y = 60
 
 --This just initializes the initial point or not idk not needed to mess with this any more
-function ComboTransformCommand( self, params )
-	self:x( x )
-	self:y( y )
+function ComboTransformCommand(self, params)
+	self:x(x)
+	self:y(y)
 end
-
-
-
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 														  **Judgment Display**
@@ -1111,19 +1196,13 @@ end
 
 	moving here eventually
 ]]
-
-
-
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 															 **NPS Display**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 	re-enabling the old nps calc/graph for now 
 ]]
-
-t[#t+1] = LoadActor("npscalc")
-
-
+t[#t + 1] = LoadActor("npscalc")
 
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 															  **NPS graph**
@@ -1131,361 +1210,361 @@ t[#t+1] = LoadActor("npscalc")
 
 	ditto
 ]]
-
 --[[~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 													**Message boxes for moving things**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	offset window esque boxes so its more intuitive to use the moving feature
 ]]
-if(playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).CustomizeGameplay) then
-t[#t+1] = Def.ActorFrame{
-	InitCommand=function(self)
-		messageBox = self
-	end,
-	Def.BitmapText{
-		Name= "errorBarPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+if (playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).CustomizeGameplay) then
+	t[#t + 1] =
+		Def.ActorFrame {
+		InitCommand = function(self)
+			messageBox = self
 		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Error Bar Position:",
-				"X: " .. errorBarX,
-				"Y: " .. errorBarY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "errorBarSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Error Bar Size:",
-				"Width: " .. errorBarWidth,
-				"Height: " .. errorBarHeight,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "targetTrackerPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Goal Tracker Position:",
-				"X: " .. targetTrackerX,
-				"Y: " .. targetTrackerY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "targetTrackerSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Goal Tracker Size:",
-				"Zoom: " .. targetTrackerZoom,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "fullProgressBarPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Full Progress Bar Position:",
-				"X: " .. fullProgressBarX,
-				"Y: " .. fullProgressBarY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "fullProgressBarSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Full Progress Bar Size:",
-				"Width: " .. fullProgressBarWidth,
-				"Height: " .. fullProgressBarHeight,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "miniProgressBarPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Mini Progress Bar Position:",
-				"X: " .. miniProgressBarX,
-				"Y: " .. miniProgressBarY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "displayPercentPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Current Percent Position:",
-				"X: " .. displayPercentX,
-				"Y: " .. displayPercentY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "displayPercentSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Current Percent Size:",
-				"Zoom: " .. displayPercentZoom,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "noteFieldPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Notefield Position:",
-				"X: " .. noteFieldX,
-				"Y: " .. noteFieldY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "noteFieldSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Notefield Size:",
-				"Width: " .. noteFieldWidth,
-				"Height: " .. noteFieldHeight,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "judgeCounterPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local text= {
-				"Judge Counter Position:",
-				"X: " .. judgeCounterX,
-				"Y: " .. judgeCounterY,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	-- had to throw this here because it was getting x/y fucked up
-	Def.BitmapText{
-		Name= "judgmentPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.JudgeX
-			local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.JudgeY
-			local text= {
-				"Judgment Label Position:",
-				"X: " .. x,
-				"Y: " .. y,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "judgmentSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.JudgeZoom
-			local text= {
-				"Judgment Label Size:",
-				"Zoom: " .. zoom,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "comboPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ComboX
-			local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ComboY
-			local text= {
-				"Combo Position:",
-				"X: " .. x,
-				"Y: " .. y,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "comboSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ComboZoom
-			local text= {
-				"Combo Size:",
-				"Zoom: " .. zoom,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "npsDisplayPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSDisplayX
-			local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSDisplayY
-			local text= {
-				"NPS Display Position:",
-				"X: " .. x,
-				"Y: " .. y,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "npsDisplaySizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSDisplayZoom
-			local text= {
-				"NPS Display Size:",
-				"Zoom: " .. zoom,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "npsGraphPosText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSGraphX
-			local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSGraphY
-			local text= {
-				"NPS Graph Position:",
-				"X: " .. x,
-				"Y: " .. y,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "npsGraphSizeText", Font= "Common Normal", 
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:shadowlength(2):xy(10, 20):zoom(.5):visible(false)
-		end,
-		UpdateCommand=function(self)
-			local width = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSGraphWidth
-			local height = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSGraphHeight
-			local text= {
-				"NPS Display Size:",
-				"Width: " .. width,
-				"Height: " .. height,
-			}
-			self:settext(table.concat(text, "\n"))
-		end,
-	},
-	Def.BitmapText{
-		Name= "Instructions", Font= "Common Normal",
-		InitCommand= function(self)
-			self:horizalign(left):vertalign(top)
-				:xy(SCREEN_WIDTH - 240, 110):zoom(.5):visible(true)
-		end,
-		OnCommand=function(self)
-			local text= {
-				"Hold the following and press the arrow",
-				"keys to alter the associated element\n",
-				"1: Judgement Text Position",
-				"2: Judgement Text Size",
-				"3: Combo Text Position",
-				"4: Combo Text Size",
-				"5: Error Bar Text Position",
-				"6: Error Bar Text Size",
-				"7: Target Tracker Text Position",
-				"8: Target Tracker Text Size",
-				"9: Full Progress Bar Position",
-				"0: Full Progress Bar Size",
-				"q: Mini Progress Bar Position",
-				"w: Display Percent Text Position",
-				"e: Display Percent Text Size",
-				"r: Notefield Position",
-				"t: Notefield Size",
-				"y: NPS Display Text Position",
-				"u: NPS Display Text Size",
-				"i: NPS Graph Position",
-				"o: NPS Graph Size",
-				"p: Judge Counter Position",
-			}
-			self:settext(table.concat(text, "\n"))
-		end
-	},
-}
+		Def.BitmapText {
+			Name = "errorBarPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Error Bar Position:",
+					"X: " .. errorBarX,
+					"Y: " .. errorBarY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "errorBarSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Error Bar Size:",
+					"Width: " .. errorBarWidth,
+					"Height: " .. errorBarHeight
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "targetTrackerPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Goal Tracker Position:",
+					"X: " .. targetTrackerX,
+					"Y: " .. targetTrackerY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "targetTrackerSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Goal Tracker Size:",
+					"Zoom: " .. targetTrackerZoom
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "fullProgressBarPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Full Progress Bar Position:",
+					"X: " .. fullProgressBarX,
+					"Y: " .. fullProgressBarY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "fullProgressBarSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Full Progress Bar Size:",
+					"Width: " .. fullProgressBarWidth,
+					"Height: " .. fullProgressBarHeight
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "miniProgressBarPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Mini Progress Bar Position:",
+					"X: " .. miniProgressBarX,
+					"Y: " .. miniProgressBarY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "displayPercentPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Current Percent Position:",
+					"X: " .. displayPercentX,
+					"Y: " .. displayPercentY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "displayPercentSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Current Percent Size:",
+					"Zoom: " .. displayPercentZoom
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "noteFieldPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Notefield Position:",
+					"X: " .. noteFieldX,
+					"Y: " .. noteFieldY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "noteFieldSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Notefield Size:",
+					"Width: " .. noteFieldWidth,
+					"Height: " .. noteFieldHeight
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "judgeCounterPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local text = {
+					"Judge Counter Position:",
+					"X: " .. judgeCounterX,
+					"Y: " .. judgeCounterY
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		-- had to throw this here because it was getting x/y fucked up
+		Def.BitmapText {
+			Name = "judgmentPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.JudgeX
+				local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.JudgeY
+				local text = {
+					"Judgment Label Position:",
+					"X: " .. x,
+					"Y: " .. y
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "judgmentSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.JudgeZoom
+				local text = {
+					"Judgment Label Size:",
+					"Zoom: " .. zoom
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "comboPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ComboX
+				local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.ComboY
+				local text = {
+					"Combo Position:",
+					"X: " .. x,
+					"Y: " .. y
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "comboSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.ComboZoom
+				local text = {
+					"Combo Size:",
+					"Zoom: " .. zoom
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "npsDisplayPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSDisplayX
+				local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSDisplayY
+				local text = {
+					"NPS Display Position:",
+					"X: " .. x,
+					"Y: " .. y
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "npsDisplaySizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local zoom = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSDisplayZoom
+				local text = {
+					"NPS Display Size:",
+					"Zoom: " .. zoom
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "npsGraphPosText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local x = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSGraphX
+				local y = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplayXYCoordinates.NPSGraphY
+				local text = {
+					"NPS Graph Position:",
+					"X: " .. x,
+					"Y: " .. y
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "npsGraphSizeText",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):shadowlength(2):xy(10, 20):zoom(.5):visible(false)
+			end,
+			UpdateCommand = function(self)
+				local width = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSGraphWidth
+				local height = playerConfig:get_data(pn_to_profile_slot(PLAYER_1)).GameplaySizes.NPSGraphHeight
+				local text = {
+					"NPS Display Size:",
+					"Width: " .. width,
+					"Height: " .. height
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		},
+		Def.BitmapText {
+			Name = "Instructions",
+			Font = "Common Normal",
+			InitCommand = function(self)
+				self:horizalign(left):vertalign(top):xy(SCREEN_WIDTH - 240, 110):zoom(.5):visible(true)
+			end,
+			OnCommand = function(self)
+				local text = {
+					"Hold the following and press the arrow",
+					"keys to alter the associated element\n",
+					"1: Judgement Text Position",
+					"2: Judgement Text Size",
+					"3: Combo Text Position",
+					"4: Combo Text Size",
+					"5: Error Bar Text Position",
+					"6: Error Bar Text Size",
+					"7: Target Tracker Text Position",
+					"8: Target Tracker Text Size",
+					"9: Full Progress Bar Position",
+					"0: Full Progress Bar Size",
+					"q: Mini Progress Bar Position",
+					"w: Display Percent Text Position",
+					"e: Display Percent Text Size",
+					"r: Notefield Position",
+					"t: Notefield Size",
+					"y: NPS Display Text Position",
+					"u: NPS Display Text Size",
+					"i: NPS Graph Position",
+					"o: NPS Graph Size",
+					"p: Judge Counter Position"
+				}
+				self:settext(table.concat(text, "\n"))
+			end
+		}
+	}
 end
 
 return t

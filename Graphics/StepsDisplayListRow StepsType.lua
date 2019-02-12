@@ -2,7 +2,9 @@
 local t = Def.ActorFrame{
 	-- todo: make this less stupid
 	Def.Sprite{
-		InitCommand=cmd(x,8;horizalign,right),
+		InitCommand=function(self)
+			self:x(8):horizalign(right)
+		end,
 		SetMessageCommand=function(self,param)
 			local path = "Themes/"..THEME:GetCurThemeName().."/Graphics/_StepsType/" .. ToEnumShortString(param.StepsType) .. ".png"
 			if FILEMAN:DoesFileExist(path) then

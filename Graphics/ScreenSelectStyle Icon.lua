@@ -14,17 +14,27 @@ t[#t+1] = Def.ActorFrame {
 	};
 	LoadFont("_overpass 36px")..{
 		Text=string.upper(string_name);
-		InitCommand=cmd(y,-12;maxwidth,232);
-		OnCommand=cmd(diffuse,Color.White);
+		InitCommand=function(self)
+			self:y(-12):maxwidth(232)
+		end;
+		OnCommand=function(self)
+			self:diffuse(Color.White)
+		end;
 	};
 	LoadFont("Common Italic Condensed")..{
 		Text=string.upper(string_expl);
-		InitCommand=cmd(y,29.5;maxwidth,222);
+		InitCommand=function(self)
+			self:y(29.5):maxwidth(222)
+		end;
 	};
 
 	LoadActor(THEME:GetPathG("ScreenSelectPlayMode", "icon/_background base"))..{
-		DisabledCommand=cmd(diffuse,color("0,0,0,0.5"));
-		EnabledCommand=cmd(diffuse,color("1,1,1,0"));
+		DisabledCommand=function(self)
+			self:diffuse(color("0,0,0,0.5"))
+		end;
+		EnabledCommand=function(self)
+			self:diffuse(color("1,1,1,0"))
+		end;
 	};
 };
 return t

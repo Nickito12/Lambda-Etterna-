@@ -2,39 +2,59 @@ local t = Def.ActorFrame {}
 
 -- Base bar diffuse,color("#1C1C1B");diffusebottomedge,color("#333230");
 t[#t+1] = Def.ActorFrame {
-	InitCommand=cmd(vertalign,top),
+	InitCommand=function(self)
+		self:vertalign(top)
+	end,
 	OnCommand=function(self)
 		self:addy(-104):decelerate(0.5):addy(104)
 	end,
-	OffCommand=cmd(sleep,0.175;decelerate,0.4;addy,-105),
+	OffCommand=function(self)
+		self:sleep(0.175):decelerate(0.4):addy(-105)
+	end,
 	Def.Quad {
-		InitCommand=cmd(vertalign,top;zoomto,SCREEN_WIDTH,96),
+		InitCommand=function(self)
+			self:vertalign(top):zoomto(SCREEN_WIDTH,96)
+		end,
 		OnCommand=function(self)
 			self:diffuse(ScreenColor(SCREENMAN:GetTopScreen():GetName())):diffusetopedge(ColorDarkTone(ScreenColor(SCREENMAN:GetTopScreen():GetName()))):diffusealpha(0.8)
 		end
 	},
 	LoadActor("_shade") .. {
-		InitCommand=cmd(vertalign,top;zoomto,SCREEN_WIDTH,96),
+		InitCommand=function(self)
+			self:vertalign(top):zoomto(SCREEN_WIDTH,96)
+		end,
 		OnCommand=function(self)
 			self:diffuse(ScreenColor(SCREENMAN:GetTopScreen():GetName())):diffusetopedge(ColorDarkTone(ScreenColor(SCREENMAN:GetTopScreen():GetName()))):diffusealpha(0.8):faderight(1)
 		end
 	},
 	-- Shadow
 	Def.Quad {
-		InitCommand=cmd(vertalign,top;zoomto,SCREEN_WIDTH,8;y,96),
-		OnCommand=cmd(diffuse,Color("Black");fadebottom,1;diffusealpha,0.6)
+		InitCommand=function(self)
+			self:vertalign(top):zoomto(SCREEN_WIDTH,8):y(96)
+		end,
+		OnCommand=function(self)
+			self:diffuse(Color("Black")):fadebottom(1):diffusealpha(0.6)
+		end
 	}
 }
 
 -- Diamond
 t[#t+1] = Def.ActorFrame {
-	InitCommand=cmd(x,-SCREEN_CENTER_X+76;y,SCREEN_TOP+30),
-	OnCommand=cmd(addx,-110;sleep,0.3;decelerate,0.7;addx,110),
-	OffCommand=cmd(decelerate,0.175;addx,-110),
+	InitCommand=function(self)
+		self:x(-SCREEN_CENTER_X+76):y(SCREEN_TOP+30)
+	end,
+	OnCommand=function(self)
+		self:addx(-110):sleep(0.3):decelerate(0.7):addx(110)
+	end,
+	OffCommand=function(self)
+		self:decelerate(0.175):addx(-110)
+	end,
 
 	-- Diamond BG
 	Def.Quad {
-		InitCommand=cmd(vertalign,top;zoomto,54,54;rotationz,45),
+		InitCommand=function(self)
+			self:vertalign(top):zoomto(54,54):rotationz(45)
+		end,
 		OnCommand=function(self)
 			self:diffuse(ColorLightTone(ScreenColor(SCREENMAN:GetTopScreen():GetName())))
 		end
@@ -42,7 +62,9 @@ t[#t+1] = Def.ActorFrame {
 	-- Symbol selector
 	Def.Sprite {
 		Name="HeaderDiamondIcon",
-		InitCommand=cmd(horizalign,center;y,18;x,-20;diffusealpha,0.8),
+		InitCommand=function(self)
+			self:horizalign(center):y(18):x(-20):diffusealpha(0.8)
+		end,
 		OnCommand=function(self)
 			local screen = SCREENMAN:GetTopScreen():GetName()
 			if FILEMAN:DoesFileExist("Themes/"..THEME:GetCurThemeName().."/Graphics/ScreenWithMenuElements header/"..screen.." icon.png") then
@@ -62,12 +84,18 @@ t[#t+1] = Def.ActorFrame {
 t[#t+1] = LoadFont("Common Header") .. {
 	Name="HeaderTitle",
 	Text=Screen.String("HeaderText"),
-	InitCommand=cmd(zoom,1.0;x,-SCREEN_CENTER_X+110;y,49;horizalign,left;diffuse,color("#ffffff");shadowlength,1;skewx,-0.1),
-	OnCommand=cmd(diffusealpha,0;sleep,0.5;smooth,0.3;diffusealpha,0.8),
+	InitCommand=function(self)
+		self:zoom(1.0):x(-SCREEN_CENTER_X+110):y(49):horizalign(left):diffuse(color("#ffffff")):shadowlength(1):skewx(-0.1)
+	end,
+	OnCommand=function(self)
+		self:diffusealpha(0):sleep(0.5):smooth(0.3):diffusealpha(0.8)
+	end,
 	UpdateScreenHeaderMessageCommand=function(self,param)
 		self:settext(param.Header)
 	end,
-	OffCommand=cmd(smooth,0.175;diffusealpha,0)
+	OffCommand=function(self)
+		self:smooth(0.175):diffusealpha(0)
+	end
 }
 
 -- t[#t+1] = LoadFont("Common Condensed") .. {

@@ -20,46 +20,58 @@ return Def.ActorFrame {
 		self:decelerate(0.3):zoomx(0):diffusealpha(0)
 		end;
 		CursorP1 = Def.ActorFrame {
-			InitCommand=cmd(x,-170;player,PLAYER_1);
+			InitCommand=function(self)
+				self:x(-170):player(PLAYER_1)
+			end;
 			PlayerJoinedMessageCommand=function(self, params)
 				if params.Player == PLAYER_1 then
 					self:visible(true);
-					(cmd(zoom,0;bounceend,1;zoom,1))(self);
+					self:zoom(0):bounceend(1):zoom(1);
 				end;
 			end;
 			PlayerUnjoinedMessageCommand=function(self, params)
 				if params.Player == PLAYER_1 then
 					self:visible(true);
-					(cmd(bouncebegin,1;zoom,0))(self);
+					self:bouncebegin(1):zoom(0);
 				end;
 			end;
 			LoadActor(THEME:GetPathG("_StepsDisplayListRow","Cursor")) .. {
-				InitCommand=cmd(diffuse,ColorLightTone(PlayerColor(PLAYER_1));x,8;zoom,0.75);
+				InitCommand=function(self)
+					self:diffuse(ColorLightTone(PlayerColor(PLAYER_1))):x(8):zoom(0.75)
+				end;
 			};
 		};
 		CursorP2 = Def.ActorFrame {
-			InitCommand=cmd(x,170;player,PLAYER_2);
+			InitCommand=function(self)
+				self:x(170):player(PLAYER_2)
+			end;
 			PlayerJoinedMessageCommand=function(self, params)
 				if params.Player == PLAYER_2 then
 					self:visible(true);
-					(cmd(zoom,0;bounceend,1;zoom,1))(self);
+					self:zoom(0):bounceend(1):zoom(1);
 				end;
 			end;
 			PlayerUnjoinedMessageCommand=function(self, params)
 				if params.Player == PLAYER_2 then
 					self:visible(true);
-					(cmd(bouncebegin,1;zoom,0))(self);
+					self:bouncebegin(1):zoom(0);
 				end;
 			end;
 			LoadActor(THEME:GetPathG("_StepsDisplayListRow","Cursor")) .. {
-				InitCommand=cmd(diffuse,ColorLightTone(PlayerColor(PLAYER_2));x,-8;zoom,0.75;zoomx,-0.75;);
+				InitCommand=function(self)
+					self:diffuse(ColorLightTone(PlayerColor(PLAYER_2))):x(-8):zoom(0.75):zoomx(-0.75)
+				end;
 			};
 		};
 		CursorP1Frame = Def.Actor{
-			ChangeCommand=cmd(stoptweening;decelerate,0.05);
+			ChangeCommand=function(self)
+				self:stoptweening():decelerate(0.05)
+			end;
 		};
 		CursorP2Frame = Def.Actor{
-			ChangeCommand=cmd(stoptweening;decelerate,0.05);
+			ChangeCommand=function(self)
+				self:stoptweening():decelerate(0.05)
+			end;
 		};
 	};
 };
